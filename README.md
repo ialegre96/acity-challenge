@@ -153,6 +153,33 @@ docker-compose ps
 
 - **Headers:** `Authorization: Bearer {token}`
 
+**Respuesta 200:**
+
+```json
+[
+  {
+    "fileId": "334e4f7d-bdec-465a-821f-d0d8b361e442",
+    "fileName": "carga_masiva_productos.xlsx",
+    "filePath": "http://seaweedfs:8333/excel-files/135b7b...xlsx",
+    "status": 5,
+    "createdAt": "2026-11-02T23:33:02.52",
+    "processedAt": null,
+    "message": null
+  },
+  {
+    "fileId": "7a9e89bd-1f84-415f-9af5-de678da8a801",
+    "fileName": "carga_masiva_productos.xlsx",
+    "filePath": "http://seaweedfs:8333/excel-files/4a22...xlsx",
+    "status": 4,
+    "createdAt": "2026-11-02T23:30:29.45",
+    "processedAt": "2026-11-02T23:30:31.11",
+    "message": null
+  }
+]
+```
+
+> 💡 El historial refleja la trazabilidad completa: el primer registro fue **rechazado** (`status: 5` = Fallido, por duplicidad de periodo) y el segundo completó el ciclo (`status: 4` = Notificado).
+
 ---
 
 ## 🔄 Ciclo de vida del archivo
@@ -232,6 +259,23 @@ AcityChallenge/
 | 401 en endpoints `/api/*`  | El token expira en 2 h: vuelve a hacer login                                                                           |
 | No llega el correo         | Verifica que `acity_mailhog` esté corriendo y revisa http://localhost:8025                                             |
 | Puerto ocupado             | Cambia el mapeo en `docker-compose.yml` (ej. `"5201:8080"`)                                                            |
+
+---
+
+## 🎬 Video Demo
+
+Puedes ver el flujo completo funcionando (login → upload → procesamiento → notificación por correo) en este video de 5 minutos:
+
+[![Video Demo](https://img.shields.io/badge/▶️%20Ver%20Video-Demo-red?style=for-the-badge&logo=google-drive)](https://drive.google.com/file/d/1bNq7ulxs7W5RLwi36-p-fVc6-oAtcJqd/view?usp=sharing)
+
+**El video muestra:**
+
+- Autenticación con JWT
+- Carga de archivo Excel via API Gateway
+- Procesamiento asíncrono en el Worker
+- Validaciones de negocio (duplicidad por periodo y código)
+- Notificación por correo en Mailhog
+- Consulta de estados en tiempo real
 
 ---
 
