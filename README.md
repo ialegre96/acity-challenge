@@ -283,4 +283,4 @@ Puedes ver el flujo completo funcionando (login → upload → procesamiento →
 
 **Iesus Alegre** — [@ialegre96](https://github.com/ialegre96)
 
-Reto técnico para postulación **Desarrollador Fullstack Senior**.
+Reto técnico para postulación **Desarrollador Backend Senior**.
