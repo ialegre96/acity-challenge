@@ -1,0 +1,150 @@
+{
+  "info": {
+    "name": "Prueba Tecnica",
+    "description": null,
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "Login",
+      "request": {
+        "method": "POST",
+        "header": [],
+        "description": "",
+        "url": {
+          "raw": "http://localhost:5200/auth/login",
+          "protocol": "http",
+          "host": [
+            "localhost:5200"
+          ],
+          "path": [
+            "auth",
+            "login"
+          ],
+          "query": [],
+          "variable": []
+        },
+        "body": {
+          "mode": "raw",
+          "raw": "{\n    \"username\": \"admin\",\n    \"password\": \"admin123\"\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        }
+      }
+    },
+    {
+      "name": "Upload Excel File ",
+      "request": {
+        "method": "POST",
+        "header": [],
+        "auth": {
+          "type": "bearer",
+          "bearer": [
+            {
+              "key": "token",
+              "value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJodHRwOi8vc2NoZW1hcy54bWxzb2FwLm9yZy93cy8yMDA1LzA1L2lkZW50aXR5L2NsYWltcy9uYW1lIjoiYWRtaW4iLCJodHRwOi8vc2NoZW1hcy54bWxzb2FwLm9yZy93cy8yMDA1LzA1L2lkZW50aXR5L2NsYWltcy9lbWFpbGFkZHJlc3MiOiJhZG1pbkBhY2l0eWNoYWxsZW5nZS5jb20iLCJodHRwOi8vc2NoZW1hcy5taWNyb3NvZnQuY29tL3dzLzIwMDgvMDYvaWRlbnRpdHkvY2xhaW1zL3JvbGUiOiJBZG1pbiIsImV4cCI6MTc5MzY2OTQwOCwiaXNzIjoiQWNpdHlDaGFsbGVuZ2UiLCJhdWQiOiJBY2l0eUNoYWxsZW5nZVVzZXJzIn0.WJz9Z8GhgqFeAnwy8gDPwyrHg4-djE16xVYmClefQP8",
+              "type": "string"
+            }
+          ]
+        },
+        "description": "",
+        "url": {
+          "raw": "http://localhost:5200/api/Excel/upload",
+          "protocol": "http",
+          "host": [
+            "localhost:5200"
+          ],
+          "path": [
+            "api",
+            "Excel",
+            "upload"
+          ],
+          "query": [],
+          "variable": []
+        },
+        "body": {
+          "mode": "formdata",
+          "formdata": [
+            {
+              "key": "file",
+              "disabled": false,
+              "type": "file",
+              "description": "",
+              "src": "C:\\Users\\LENOVO\\Desktop\\carga_masiva_productos (1).xlsx",
+              "contentType": "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "name": "Consultar el estado de un archivo",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "auth": {
+          "type": "bearer",
+          "bearer": [
+            {
+              "key": "token",
+              "value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJodHRwOi8vc2NoZW1hcy54bWxzb2FwLm9yZy93cy8yMDA1LzA1L2lkZW50aXR5L2NsYWltcy9uYW1lIjoiYWRtaW4iLCJodHRwOi8vc2NoZW1hcy54bWxzb2FwLm9yZy93cy8yMDA1LzA1L2lkZW50aXR5L2NsYWltcy9lbWFpbGFkZHJlc3MiOiJhZG1pbkBhY2l0eWNoYWxsZW5nZS5jb20iLCJodHRwOi8vc2NoZW1hcy5taWNyb3NvZnQuY29tL3dzLzIwMDgvMDYvaWRlbnRpdHkvY2xhaW1zL3JvbGUiOiJBZG1pbiIsImV4cCI6MTc5MzY2OTQwOCwiaXNzIjoiQWNpdHlDaGFsbGVuZ2UiLCJhdWQiOiJBY2l0eUNoYWxsZW5nZVVzZXJzIn0.WJz9Z8GhgqFeAnwy8gDPwyrHg4-djE16xVYmClefQP8",
+              "type": "string"
+            }
+          ]
+        },
+        "description": "",
+        "url": {
+          "raw": "http://localhost:5200/api/Excel/status/33464f7d-bdec-465a-821f-d0d8b361e642",
+          "protocol": "http",
+          "host": [
+            "localhost:5200"
+          ],
+          "path": [
+            "api",
+            "Excel",
+            "status",
+            "33464f7d-bdec-465a-821f-d0d8b361e642"
+          ],
+          "query": [],
+          "variable": []
+        }
+      }
+    },
+    {
+      "name": "Ver Historial de Subidas",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "auth": {
+          "type": "bearer",
+          "bearer": [
+            {
+              "key": "token",
+              "value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJodHRwOi8vc2NoZW1hcy54bWxzb2FwLm9yZy93cy8yMDA1LzA1L2lkZW50aXR5L2NsYWltcy9uYW1lIjoiYWRtaW4iLCJodHRwOi8vc2NoZW1hcy54bWxzb2FwLm9yZy93cy8yMDA1LzA1L2lkZW50aXR5L2NsYWltcy9lbWFpbGFkZHJlc3MiOiJhZG1pbkBhY2l0eWNoYWxsZW5nZS5jb20iLCJodHRwOi8vc2NoZW1hcy5taWNyb3NvZnQuY29tL3dzLzIwMDgvMDYvaWRlbnRpdHkvY2xhaW1zL3JvbGUiOiJBZG1pbiIsImV4cCI6MTc5MzY2OTQwOCwiaXNzIjoiQWNpdHlDaGFsbGVuZ2UiLCJhdWQiOiJBY2l0eUNoYWxsZW5nZVVzZXJzIn0.WJz9Z8GhgqFeAnwy8gDPwyrHg4-djE16xVYmClefQP8",
+              "type": "string"
+            }
+          ]
+        },
+        "description": "",
+        "url": {
+          "raw": "http://localhost:5200/api/Excel/history",
+          "protocol": "http",
+          "host": [
+            "localhost:5200"
+          ],
+          "path": [
+            "api",
+            "Excel",
+            "history"
+          ],
+          "query": [],
+          "variable": []
+        }
+      }
+    }
+  ],
+  "variable": []
+}
