@@ -1,0 +1,194 @@
+services:
+  # ==========================================
+  # INFRAESTRUCTURA
+  # ==========================================
+  sqlserver:
+    image: mcr.microsoft.com/mssql/server:2022-latest
+    container_name: acity_sqlserver
+    environment:
+      - ACCEPT_EULA=Y
+      - MSSQL_SA_PASSWORD=TuPasswordSegura123!
+    ports:
+      - "1433:1433"
+    volumes:
+      - sqlserver_data:/var/opt/mssql
+    networks:
+      - acity_network
+
+  # Servicio temporal que crea la BD y las tablas automáticamente
+  db-init:
+    image: mcr.microsoft.com/mssql/server:2022-latest
+    container_name: acity_db_init
+    depends_on:
+      - sqlserver
+    volumes:
+      - ./scripts:/scripts
+    command: >
+      /bin/bash -c "
+      echo 'Esperando 30 segundos a que SQL Server arranque...';
+      sleep 30;
+      /opt/mssql-tools18/bin/sqlcmd -S sqlserver -U sa -P 'TuPasswordSegura123!' -C -d master -i /scripts/init.sql
+      "
+    networks:
+      - acity_network
+
+  rabbitmq:
+    image: rabbitmq:3.13-management
+    container_name: acity_rabbitmq
+    environment:
+      - RABBITMQ_DEFAULT_USER=admin
+      - RABBITMQ_DEFAULT_PASS=admin
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+    volumes:
+      - rabbitmq_data:/var/lib/rabbitmq
+    networks:
+      - acity_network
+    healthcheck:
+      test: ["CMD", "rabbitmq-diagnostics", "check_port_connectivity"]
+      interval: 10s
+      timeout: 3s
+      retries: 10
+
+  seaweedfs:
+    image: chrislusf/seaweedfs
+    container_name: acity_seaweedfs
+    command: "server -s3"
+    ports:
+      - "8333:8333"
+      - "9333:9333"
+    volumes:
+      - seaweedfs_data:/data
+    networks:
+      - acity_network
+
+  mailhog:
+    image: mailhog/mailhog
+    container_name: acity_mailhog
+    ports:
+      - "1025:1025"
+      - "8025:8025"
+    networks:
+      - acity_network
+
+  # ==========================================
+  # MICROSERVICIOS
+  # ==========================================
+  auth-service:
+    build:
+      context: .
+      dockerfile: AuthService/Dockerfile
+    container_name: acity_auth
+    ports:
+      - "5100:8080"
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+    networks:
+      - acity_network
+
+  publisher-api:
+    build:
+      context: .
+      dockerfile: Publisher/Dockerfile
+    container_name: acity_publisher_api
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ConnectionStrings__PublisherDb=Server=sqlserver,1433;Database=PublisherDb;User Id=sa;Password=TuPasswordSegura123!;TrustServerCertificate=True
+      - RabbitMQ__HostName=rabbitmq
+      - RabbitMQ__Port=5672
+      - RabbitMQ__UserName=admin
+      - RabbitMQ__Password=admin
+      - RabbitMQ__QueueName=carga_masiva
+      - SeaweedFS__BaseUrl=http://seaweedfs:8333
+      - SeaweedFS__BucketName=excel-files
+    ports:
+      - "5000:8080"
+    depends_on:
+      db-init:
+        condition: service_completed_successfully
+      rabbitmq:
+        condition: service_healthy
+      seaweedfs:
+        condition: service_started
+    networks:
+      - acity_network
+
+  worker:
+    build:
+      context: .
+      dockerfile: Worker/Dockerfile
+    container_name: acity_worker
+    environment:
+      - DOTNET_ENVIRONMENT=Production
+      - ConnectionStrings__PublisherDb=Server=sqlserver,1433;Database=PublisherDb;User Id=sa;Password=TuPasswordSegura123!;TrustServerCertificate=True
+      - RabbitMQ__HostName=rabbitmq
+      - RabbitMQ__Port=5672
+      - RabbitMQ__UserName=admin
+      - RabbitMQ__Password=admin
+      - RabbitMQ__QueueName=carga_masiva
+      - RabbitMQ__NotificationsQueueName=notificaciones
+      - SeaweedFS__BaseUrl=http://seaweedfs:8333
+      - SeaweedFS__BucketName=excel-files
+    depends_on:
+      db-init:
+        condition: service_completed_successfully
+      rabbitmq:
+        condition: service_healthy
+      seaweedfs:
+        condition: service_started
+    networks:
+      - acity_network
+
+  notification-service:
+    build:
+      context: .
+      dockerfile: NotificationService/Dockerfile
+    container_name: acity_notification
+    environment:
+      - DOTNET_ENVIRONMENT=Production
+      - ConnectionStrings__PublisherDb=Server=sqlserver,1433;Database=PublisherDb;User Id=sa;Password=TuPasswordSegura123!;TrustServerCertificate=True
+      - RabbitMQ__HostName=rabbitmq
+      - RabbitMQ__Port=5672
+      - RabbitMQ__UserName=admin
+      - RabbitMQ__Password=admin
+      - RabbitMQ__NotificationsQueueName=notificaciones
+      - SmtpSettings__Host=mailhog
+      - SmtpSettings__Port=1025
+      - SmtpSettings__FromEmail=no-reply@acitychallenge.com
+      - SmtpSettings__EnableSsl=false
+    depends_on:
+      db-init:
+        condition: service_completed_successfully
+      rabbitmq:
+        condition: service_healthy
+      mailhog:
+        condition: service_started
+    networks:
+      - acity_network
+
+  api-gateway:
+    build:
+      context: .
+      dockerfile: ApiGateway/Dockerfile
+    container_name: acity_gateway
+    ports:
+      - "5200:8080"
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ReverseProxy__Clusters__auth-cluster__Destinations__destination1__Address=http://auth-service:8080/
+      - ReverseProxy__Clusters__publisher-cluster__Destinations__destination1__Address=http://publisher-api:8080/
+    depends_on:
+      - auth-service
+      - publisher-api
+    networks:
+      - acity_network
+
+volumes:
+  rabbitmq_data:
+  seaweedfs_data:
+  sqlserver_data:
+
+networks:
+  acity_network:
+    driver: bridge

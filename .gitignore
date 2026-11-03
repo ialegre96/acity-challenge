@@ -1,0 +1,83 @@
+# ============================================
+# COMPILACIÓN Y BUILD (.NET)
+# ============================================
+bin/
+obj/
+*.dll
+*.exe
+*.pdb
+*.cache
+*.user
+*.suo
+*.nupkg
+*.snupkg
+
+# ============================================
+# CREDENCIALES Y SECRETOS (CRÍTICO)
+# ============================================
+*.env
+*.env.local
+.env.*
+secrets.json
+*.pfx
+*.cer
+*.key
+
+# Appsettings con credenciales (el base sí se sube)
+appsettings.Development.json
+appsettings.Production.json
+appsettings.Local.json
+
+# ============================================
+# DOCKER
+# ============================================
+docker-compose.override.yml
+*.dockerfile.local
+
+# ============================================
+# IDE Y EDITORES
+# ============================================
+.vs/
+.vscode/
+.idea/
+*.sln.docstates
+
+# ============================================
+# ARCHIVOS SUBIDOS Y TEMPORALES
+# ============================================
+**/UploadedFiles/
+**/uploads/
+**/temp/
+**/tmp/
+**/Properties/
+
+# ============================================
+# LOGS Y TEMPORALES
+# ============================================
+*.log
+logs/
+TestResults/
+coverage/
+*.coverage
+
+# ============================================
+# NPM / FRONTEND (si agregas React después)
+# ============================================
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+package-lock.json
+yarn.lock
+
+# ============================================
+# REPMIX (evita recursividad)
+# ============================================
+repomix-output.xml
+repomix-output.md
+repomix.config.json
+output.xml
+output.md
+AcityChallenge.xml
+.repomixignore
+AcityChallenge.xml
